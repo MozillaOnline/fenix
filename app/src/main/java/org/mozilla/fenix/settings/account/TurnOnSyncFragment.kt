@@ -116,7 +116,8 @@ class TurnOnSyncFragment : Fragment(), AccountObserver {
         view.signInScanButton.setOnClickListener(paringClickListener)
         view.signInEmailButton.setOnClickListener(signInClickListener)
         view.signInInstructions.text = HtmlCompat.fromHtml(
-            getString(R.string.sign_in_instructions),
+            if (requireContext().settings().useLocalFxAServer) getString(R.string.sign_in_instructions_cn)
+            else getString(R.string.sign_in_instructions),
             HtmlCompat.FROM_HTML_MODE_LEGACY
         )
 
