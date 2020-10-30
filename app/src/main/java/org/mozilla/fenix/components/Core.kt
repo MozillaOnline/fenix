@@ -322,8 +322,8 @@ class Core(
             if (!context.settings().defaultTopSitesAdded) {
                 defaultTopSites.add(
                     Pair(
-                        context.getString(R.string.default_top_site_google),
-                        SupportUtils.GOOGLE_URL
+                        context.getString(R.string.default_top_site_baidu),
+                        SupportUtils.BAIDU_URL
                     )
                 )
 
@@ -338,8 +338,8 @@ class Core(
 
                 defaultTopSites.add(
                     Pair(
-                        context.getString(R.string.default_top_site_wikipedia),
-                        SupportUtils.WIKIPEDIA_URL
+                        context.getString(R.string.default_top_site_jd),
+                        SupportUtils.JD_URL
                     )
                 )
 
