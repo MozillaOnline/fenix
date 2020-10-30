@@ -4,9 +4,12 @@
 package org.mozilla.fenix.components
 
 import android.content.Context
+import mozilla.components.support.base.log.logger.Logger
 import mozilla.components.service.fxa.ServerConfig
 import mozilla.components.service.fxa.ServerConfig.Server
+import org.mozilla.fenix.Config
 import org.mozilla.fenix.ext.settings
+import java.io.File
 
 /**
  * Utility to configure Firefox Account servers.
@@ -19,7 +22,28 @@ object FxaServer {
     fun config(context: Context): ServerConfig {
         val serverOverride = context.settings().overrideFxAServer
         val tokenServerOverride = context.settings().overrideSyncTokenServer.ifEmpty { null }
+
+        // Try to read Fennec FxA state from fxa.aacount.json
+        val haveReadFxAAccountJson = context.settings().haveReadFxAAccountJson
+        if (!haveReadFxAAccountJson && Config.channel.isMozillaOnline) {
+            val fxaState = File("${context.filesDir}", "fxa.account.json")
+            if (fxaState.exists()) {
+                if (!fxaState.readText().contains("firefox.com.cn") &&
+                    (context.settings().allowDomesticChinaFxaServer)) {
+                    context.settings().switchUseLocalFxAServer()
+                }
+            } else {
+                Logger.error("No fxa.account.json file!")
+            }
+            context.settings().switchHaveReadFxAAccountJson()
+        }
+        val useLocalFxAServer = context.settings().allowDomesticChinaFxaServer
+
         if (serverOverride.isEmpty()) {
+            // Figure out if we enable local server
+            if (useLocalFxAServer && Config.channel.isMozillaOnline) {
+                return ServerConfig(Server.CHINA, CLIENT_ID, REDIRECT_URL, tokenServerOverride)
+            }
             return ServerConfig(Server.RELEASE, CLIENT_ID, REDIRECT_URL, tokenServerOverride)
         }
         return ServerConfig(serverOverride, CLIENT_ID, REDIRECT_URL, tokenServerOverride)
