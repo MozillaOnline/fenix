@@ -623,6 +623,10 @@
     <string name="collection_open_tabs">Open tabs</string>
     <!-- Hint for adding name of a collection -->
     <string name="collection_name_hint">Collection name</string>
+    <!-- Default title for pinned Baidu top site that links to Baidu home page  -->
+    <string name="default_top_site_baidu">Baidu</string>
+    <!-- Default title for pinned JD top site that links to JD home page  -->
+    <string name="default_top_site_jd">JD</string>
     <!-- Text for the menu button to remove a top site -->
     <string name="remove_top_site">Remove</string>
     <!-- Text for the menu button to delete a top site from history -->
