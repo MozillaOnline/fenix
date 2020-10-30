@@ -85,13 +85,24 @@ class AddonsManagementFragment : Fragment(R.layout.fragment_add_ons_management) 
         lifecycleScope.launch(IO) {
             try {
                 val addons = requireContext().components.addonManager.getAddons()
+                // Locally filter the addon list for China
+                val addonsChina = addons.filter {
+                            !(it.translatableName.toString().contains("uBlock") ||
+                            it.translatableName.toString().contains("Ghostery") ||
+                            it.translatableName.toString().contains("AdGuard") ||
+                            it.translatableName.toString().contains("Privacy Badger") ||
+                            it.translatableName.toString().contains("NoScript") ||
+                            it.translatableName.toString().contains("FoxyProxy") ||
+                            it.translatableName.toString().contains("Decentraleyes") ||
+                            it.translatableName.toString().contains("Privacy Possum"))
+                }
                 lifecycleScope.launch(Dispatchers.Main) {
                     runIfFragmentIsAttached {
                         if (!shouldRefresh) {
                             adapter = AddonsManagerAdapter(
                                 requireContext().components.addonCollectionProvider,
                                 managementView,
-                                addons,
+                                addonsChina,
                                 style = createAddonStyle(requireContext())
                             )
                         }
@@ -101,7 +112,7 @@ class AddonsManagementFragment : Fragment(R.layout.fragment_add_ons_management) 
 
                         recyclerView.adapter = adapter
                         if (shouldRefresh) {
-                            adapter?.updateAddons(addons)
+                            adapter?.updateAddons(addonsChina)
                         }
                     }
                 }
