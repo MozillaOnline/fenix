@@ -534,12 +534,14 @@ class SettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun updateFxAUseLocalMenu() {
+        val settings = requireContext().settings()
         val preferenceUseLocalFxAServer =
             findPreference<SwitchPreference>(getPreferenceKey(R.string.pref_key_use_local_fxa_server))
         val enabled =
             requireComponents.backgroundServices.accountManager.authenticatedAccount() == null
         preferenceUseLocalFxAServer?.apply {
             isEnabled = enabled
+            isChecked = settings.useLocalFxAServer
         }
     }
 
