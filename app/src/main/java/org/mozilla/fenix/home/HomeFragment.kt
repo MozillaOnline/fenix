@@ -118,6 +118,12 @@ import org.mozilla.fenix.utils.allowUndo
 import org.mozilla.fenix.whatsnew.WhatsNew
 import java.lang.ref.WeakReference
 import kotlin.math.min
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.method.LinkMovementMethod
+import android.widget.TextView
+import mozilla.components.support.ktx.android.content.booleanPreference
+import kotlin.system.exitProcess
 
 @ExperimentalCoroutinesApi
 @Suppress("TooManyFunctions", "LargeClass")
@@ -174,6 +180,10 @@ class HomeFragment : Fragment() {
             if (!onboarding.userHasBeenOnboarded()) {
                 requireComponents.analytics.metrics.track(Event.OpenedAppFirstRun)
             }
+        }
+
+        if(!onboarding.userHasBeenOnboarded() && requireContext().settings().shouldShowPrivacyPopWindow){
+            showPrivacyPopWindow()
         }
     }
 
@@ -1014,6 +1024,34 @@ class HomeFragment : Fragment() {
 
     private fun handleSwipedItemDeletionCancel() {
         view?.sessionControlRecyclerView?.adapter?.notifyDataSetChanged()
+    }
+
+    private fun showPrivacyPopWindow(){
+        val content = requireContext().getString(R.string.privacy_notice_content)
+        val messageClickable1 = requireContext().getString(R.string.privacy_notice_clickable1)
+        val messageClickable2 = requireContext().getString(R.string.privacy_notice_clickable2)
+        val messageClickable3 = requireContext().getString(R.string.privacy_notice_clickable3)
+        val messageSpannable = SpannableString(content)
+
+        val clickableSpan1 = MultiClickableSpan(1, requireContext())
+        val clickableSpan2 = MultiClickableSpan(2, requireContext())
+        val clickableSpan3 = MultiClickableSpan(3, requireContext())
+
+        messageSpannable.setSpan(clickableSpan1, content.indexOf(messageClickable1), content.indexOf(messageClickable1) + messageClickable1.length, Spanned.SPAN_INCLUSIVE_INCLUSIVE)
+        messageSpannable.setSpan(clickableSpan2, content.indexOf(messageClickable2), content.indexOf(messageClickable2) + messageClickable2.length, Spanned.SPAN_INCLUSIVE_INCLUSIVE)
+        messageSpannable.setSpan(clickableSpan3, content.indexOf(messageClickable3), content.indexOf(messageClickable3) + messageClickable3.length, Spanned.SPAN_INCLUSIVE_INCLUSIVE)
+
+        val builder = AlertDialog.Builder(requireActivity())
+            .setPositiveButton(context?.getString(R.string.privacy_notice_positive_button), DialogInterface.OnClickListener { _, _ ->
+                requireContext().settings().shouldShowPrivacyPopWindow = false
+            })
+            .setNeutralButton(context?.getString(R.string.privacy_notice_neutral_button), DialogInterface.OnClickListener { _, _ -> exitProcess(0) })
+            .setTitle(context?.getString(R.string.privacy_notice_title))
+            .setMessage(messageSpannable)
+            .setCancelable(false)
+        val alertDialog:AlertDialog = builder.create()
+        alertDialog.show()
+        alertDialog.findViewById<TextView>(android.R.id.message)?.movementMethod = LinkMovementMethod.getInstance()
     }
 
     companion object {
