@@ -31,7 +31,7 @@ class MigratingFenixApplication : FenixApplication() {
                 this.components.core.pinnedSiteStorage
             )
             .migrateLogins(this.components.core.lazyPasswordsStorage)
-            .migrateFxa(lazy { this.components.backgroundServices.accountManager })
+            .migrateFxa(lazy { this.components.backgroundServices.accountManager }, fxaExpectChinaServers = true)
             .migrateAddons(
                 this.components.core.engine,
                 this.components.addonCollectionProvider,
