@@ -10,6 +10,8 @@ import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.activity_migration.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import mozilla.components.support.base.log.logger.Logger
 import mozilla.components.support.ktx.android.content.getColorFromAttr
 import mozilla.components.support.migration.AbstractMigrationProgressActivity
@@ -21,12 +23,14 @@ import mozilla.components.support.migration.state.MigrationStore
 import org.mozilla.fenix.HomeActivity
 import org.mozilla.fenix.IntentReceiverActivity
 import org.mozilla.fenix.R
+import org.mozilla.fenix.SendChinaMetrics
 import org.mozilla.fenix.ext.components
 
 class MigrationProgressActivity : AbstractMigrationProgressActivity() {
     private val logger = Logger("MigrationProgressActivity")
     private val statusAdapter = MigrationStatusAdapter()
     override val store: MigrationStore by lazy { components.migrationStore }
+    private val sendChinaMetrics = SendChinaMetrics(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,6 +59,10 @@ class MigrationProgressActivity : AbstractMigrationProgressActivity() {
         }
 
         migration_button_text_view.text = getString(R.string.migration_updating_app_button_text, appName)
+
+        GlobalScope.launch {
+            sendChinaMetrics.uploadPing(SendChinaMetrics.UPDATE)
+        }
     }
 
     override fun onMigrationCompleted(results: MigrationResults) {

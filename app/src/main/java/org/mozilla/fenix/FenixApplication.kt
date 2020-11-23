@@ -5,11 +5,14 @@
 package org.mozilla.fenix
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Build
 import android.os.Build.VERSION.SDK_INT
 import android.os.StrictMode
 import android.util.Log.INFO
 import androidx.annotation.CallSuper
+import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.getSystemService
 import androidx.work.Configuration.Builder
@@ -63,6 +66,8 @@ open class FenixApplication : LocaleAwareApplication(), Provider {
     private val logger = Logger("FenixApplication")
 
     open val components by lazy { Components(this) }
+
+    private val sendChinaMetrics = SendChinaMetrics(this)
 
     var visibilityLifecycleCallback: VisibilityLifecycleCallback? = null
         private set
@@ -157,6 +162,26 @@ open class FenixApplication : LocaleAwareApplication(), Provider {
         initVisualCompletenessQueueAndQueueTasks()
 
         components.appStartupTelemetry.onFenixApplicationOnCreate()
+        GlobalScope.launch {
+            sendChinaMetrics.uploadPing(SendChinaMetrics.START)
+            if (!wasAlreadyActivated()) {
+                sendChinaMetrics.uploadPing(SendChinaMetrics.ACTIVATE)
+                markAsActivated()
+            }
+        }
+    }
+
+    private val prefs: SharedPreferences by lazy {
+        this.getSharedPreferences(
+            "${this.javaClass.canonicalName}.prefs", Context.MODE_PRIVATE)
+    }
+
+    internal fun wasAlreadyActivated(): Boolean {
+        return prefs.getBoolean("activation_sent", false)
+    }
+
+    internal fun markAsActivated() {
+        prefs.edit().putBoolean("activation_sent", true).apply()
     }
 
     private fun restoreDownloads() {

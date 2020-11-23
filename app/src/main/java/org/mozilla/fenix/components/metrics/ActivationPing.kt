@@ -88,5 +88,6 @@ class ActivationPing(private val context: Context) {
         }
 
         triggerPing()
+        Logger.debug("ActivationPing - sent")
     }
 }
