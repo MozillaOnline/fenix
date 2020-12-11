@@ -15,6 +15,8 @@ import org.mozilla.fenix.Config
 import org.mozilla.fenix.ext.components
 import org.mozilla.geckoview.GeckoRuntime
 import org.mozilla.geckoview.GeckoRuntimeSettings
+import org.mozilla.geckoview.ContentBlocking
+import org.mozilla.geckoview.ContentBlocking.SafeBrowsingProvider
 
 object GeckoProvider {
     var testConfig: Bundle? = null
@@ -62,6 +64,24 @@ object GeckoProvider {
             val fontSize = settings.fontSizeFactor
             runtimeSettings.fontSizeFactor = fontSize
         }
+
+        // Add safebrowsing providers for China
+        val mozcn = SafeBrowsingProvider
+            .withName("mozcn")
+            .version("2.2")
+            .lists("m6eb-phish-shavar", "m6ib-phish-shavar")
+            .updateUrl("https://sb.firefox.com.cn/downloads?client=SAFEBROWSING_ID&appver=%MAJOR_VERSION%&pver=2.2")
+            .getHashUrl("https://sb.firefox.com.cn/gethash?client=SAFEBROWSING_ID&appver=%MAJOR_VERSION%&pver=2.2")
+            .build()
+        runtimeSettings.contentBlocking.setSafeBrowsingProviders(mozcn,
+            // Keep the existing configuration
+            ContentBlocking.GOOGLE_SAFE_BROWSING_PROVIDER,
+            ContentBlocking.GOOGLE_LEGACY_SAFE_BROWSING_PROVIDER)
+        runtimeSettings.contentBlocking.setSafeBrowsingPhishingTable(
+            "m6eb-phish-shavar",
+            "m6ib-phish-shavar",
+            // Existing configuration
+            "goog-phish-proto")
 
         val geckoRuntime = GeckoRuntime.create(context, runtimeSettings)
         val loginStorageDelegate = GeckoLoginStorageDelegate(storage)
