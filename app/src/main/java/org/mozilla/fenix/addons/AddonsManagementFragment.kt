@@ -29,6 +29,7 @@ import mozilla.components.feature.addons.ui.AddonInstallationDialogFragment
 import mozilla.components.feature.addons.ui.AddonsManagerAdapter
 import mozilla.components.feature.addons.ui.PermissionsDialogFragment
 import mozilla.components.feature.addons.ui.translateName
+import org.mozilla.fenix.Config
 import org.mozilla.fenix.R
 import org.mozilla.fenix.components.FenixSnackbar
 import org.mozilla.fenix.components.metrics.Event
@@ -103,15 +104,31 @@ class AddonsManagementFragment : Fragment(R.layout.fragment_add_ons_management) 
         lifecycleScope.launch(IO) {
             try {
                 val addons = requireContext().components.addonManager.getAddons(allowCache = allowCache)
+                val mozOnline =
+                    listOf ("uBlock0@raymondhill.net", "firefox@ghostery.com",
+                        "jid1-MnnxcxisBPnSXQ@jetpack", "adguardadblocker@adguard.com",
+                        "foxyproxy@eric.h.jung", "{73a6fe31-595d-460b-a920-fcc0f8843232}",
+                        "jid1-BoFifL9Vbdl2zQ@jetpack", "woop-NoopscooPsnSXQ@jetpack"
+                )
                 lifecycleScope.launch(Dispatchers.Main) {
                     runIfFragmentIsAttached {
                         if (!shouldRefresh) {
-                            adapter = AddonsManagerAdapter(
-                                requireContext().components.addonCollectionProvider,
-                                managementView,
-                                addons,
-                                style = createAddonStyle(requireContext())
-                            )
+                            if (Config.channel.isMozillaOnline) {
+                                adapter = AddonsManagerAdapter(
+                                    requireContext().components.addonCollectionProvider,
+                                    managementView,
+                                    addons,
+                                    style = createAddonStyle(requireContext()),
+                                    mozOnline
+                                )
+                            }else {
+                                adapter = AddonsManagerAdapter(
+                                    requireContext().components.addonCollectionProvider,
+                                    managementView,
+                                    addons,
+                                    style = createAddonStyle(requireContext()),
+                                )
+                            }
                         }
                         isInstallationInProgress = false
                         view.add_ons_progress_bar.isVisible = false
