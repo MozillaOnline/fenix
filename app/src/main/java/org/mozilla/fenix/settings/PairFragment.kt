@@ -20,6 +20,7 @@ import mozilla.components.support.base.feature.UserInteractionHandler
 import mozilla.components.support.base.feature.ViewBoundFeatureWrapper
 import org.mozilla.fenix.R
 import org.mozilla.fenix.ext.requireComponents
+import org.mozilla.fenix.ext.settings
 import org.mozilla.fenix.ext.showToolbar
 
 class PairFragment : Fragment(R.layout.fragment_pair), UserInteractionHandler {
@@ -67,7 +68,8 @@ class PairFragment : Fragment(R.layout.fragment_pair), UserInteractionHandler {
                         false
                     )
                 },
-                scanMessage = R.string.pair_instructions_2
+                scanMessage = if (requireContext().settings().useLocalFxAServer) R.string.pair_instructions_2_cn
+                else R.string.pair_instructions_2
             ),
             owner = this,
             view = view
