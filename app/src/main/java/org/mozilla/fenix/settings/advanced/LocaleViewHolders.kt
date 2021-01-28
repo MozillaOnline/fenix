@@ -4,6 +4,7 @@
 
 package org.mozilla.fenix.settings.advanced
 
+import android.util.Log
 import android.view.View
 import androidx.annotation.VisibleForTesting
 import androidx.core.view.isVisible
@@ -20,10 +21,22 @@ class LocaleViewHolder(
 ) : BaseLocaleViewHolder(view, selectedLocale) {
 
     override fun bind(locale: Locale) {
-        // Capitalisation is done using the rules of the appropriate locale (endonym and exonym).
-        locale_title_text.text = locale.getDisplayName(locale).capitalize(locale)
-        // Show the given locale using the device locale for the subtitle.
-        locale_subtitle_text.text = locale.displayName.capitalize(Locale.getDefault())
+        if (locale.language == "zh" && locale.country == "CN") {
+            locale_title_text.text =
+                Locale.forLanguageTag("zh-Hans").getDisplayName(locale).capitalize(locale)
+            locale_subtitle_text.text =
+                Locale.forLanguageTag("zh-Hans").displayName.capitalize(Locale.getDefault())
+        } else if (locale.language == "zh" && locale.country == "TW") {
+            locale_title_text.text =
+                Locale.forLanguageTag("zh-Hant").getDisplayName(locale).capitalize(locale)
+            locale_subtitle_text.text =
+                Locale.forLanguageTag("zh-Hant").displayName.capitalize(Locale.getDefault())
+        } else {
+            // Capitalisation is done using the rules of the appropriate locale (endonym and exonym).
+            locale_title_text.text = locale.getDisplayName(locale).capitalize(locale)
+            // Show the given locale using the device locale for the subtitle.
+            locale_subtitle_text.text = locale.displayName.capitalize(Locale.getDefault())
+        }
         locale_selected_icon.isVisible = isCurrentLocaleSelected(locale, isDefault = false)
 
         itemView.setOnClickListener {
@@ -41,7 +54,12 @@ class SystemLocaleViewHolder(
     override fun bind(locale: Locale) {
         locale_title_text.text = itemView.context.getString(R.string.default_locale_text)
         // Use the device locale for the system locale subtitle.
-        locale_subtitle_text.text = locale.getDisplayName(locale).capitalize(locale)
+        if (locale.language == "zh" && locale.country == "TW") {
+            locale_subtitle_text.text =
+                Locale.forLanguageTag("zh-Hant").displayName.capitalize(Locale.getDefault())
+        } else {
+            locale_subtitle_text.text = locale.getDisplayName(locale).capitalize(locale)
+        }
         locale_selected_icon.isVisible = isCurrentLocaleSelected(locale, isDefault = true)
         itemView.setOnClickListener {
             interactor.onDefaultLocaleSelected()
