@@ -76,6 +76,9 @@ class TopSiteItemViewHolder(
             SupportUtils.BAIDU_URL -> {
                 favicon_image.setImageDrawable(getDrawable(itemView.context, R.drawable.ic_baidu))
             }
+            SupportUtils.PDD_URL -> {
+                favicon_image.setImageDrawable(getDrawable(itemView.context, R.drawable.ic_pdd))
+            }
             SupportUtils.JD_URL -> {
                 favicon_image.setImageDrawable(getDrawable(itemView.context, R.drawable.ic_jd))
             }

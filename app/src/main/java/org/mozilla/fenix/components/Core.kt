@@ -334,6 +334,13 @@ class Core(
                             SupportUtils.JD_URL
                         )
                     )
+
+                    defaultTopSites.add(
+                        Pair(
+                            context.getString(R.string.default_top_site_pdd),
+                            SupportUtils.PDD_URL
+                        )
+                    )
                 } else {
                     defaultTopSites.add(
                         Pair(
