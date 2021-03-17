@@ -39,6 +39,7 @@ import mozilla.components.support.rusthttp.RustHttpConfig
 import mozilla.components.support.rustlog.RustLog
 import mozilla.components.support.utils.logElapsedTime
 import mozilla.components.support.webextensions.WebExtensionSupport
+import org.mozilla.fenix.GleanMetrics.Metrics
 import org.mozilla.fenix.GleanMetrics.PerfStartup
 import org.mozilla.fenix.components.Components
 import org.mozilla.fenix.components.metrics.MetricServiceType
@@ -113,6 +114,14 @@ open class FenixApplication : LocaleAwareApplication(), Provider {
                     lazy(LazyThreadSafetyMode.NONE) { components.core.client }
                 )),
             uploadEnabled = telemetryEnabled
+        )
+
+        // Set this early to guarantee it's in every ping from here on.
+        Metrics.distributionId.set(
+            when (Config.channel.isMozillaOnline) {
+                true -> "MozillaOnline"
+                false -> "Mozilla"
+            }
         )
     }
 
