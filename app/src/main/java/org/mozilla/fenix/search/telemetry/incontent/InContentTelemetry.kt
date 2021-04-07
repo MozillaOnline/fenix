@@ -14,6 +14,7 @@ import org.mozilla.fenix.components.metrics.MetricController
 import org.mozilla.fenix.search.telemetry.BaseSearchTelemetry
 import org.mozilla.fenix.search.telemetry.ExtensionInfo
 import org.mozilla.fenix.search.telemetry.getTrackKey
+import android.util.Log
 
 class InContentTelemetry(private val metrics: MetricController) : BaseSearchTelemetry() {
 
@@ -40,6 +41,9 @@ class InContentTelemetry(private val metrics: MetricController) : BaseSearchTele
         val uri = url.toUri()
         val paramSet = uri.queryParameterNames
 
+        Log.e(LOG_TAG, "incontentprovider: ${provider.name}")
+        Log.e(LOG_TAG, "paramSet: $paramSet")
+
         if (!paramSet.contains(provider.queryParam)) {
             return
         }
@@ -63,5 +67,7 @@ class InContentTelemetry(private val metrics: MetricController) : BaseSearchTele
 
         @VisibleForTesting
         internal const val COOKIES_MESSAGE_ID = "BrowserCookiesMessage"
+
+        const val LOG_TAG = "BaiduTracking"
     }
 }

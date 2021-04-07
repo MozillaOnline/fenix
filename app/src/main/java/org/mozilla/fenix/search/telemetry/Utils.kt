@@ -5,12 +5,14 @@
 package org.mozilla.fenix.search.telemetry
 
 import android.net.Uri
+import android.util.Log
 import org.json.JSONObject
 
 private const val SEARCH_TYPE_SAP_FOLLOW_ON = "sap-follow-on"
 private const val SEARCH_TYPE_SAP = "sap"
 private const val SEARCH_TYPE_ORGANIC = "organic"
 private const val CHANNEL_KEY = "channel"
+const val LOG_TAG = "BaiduTracking"
 
 internal fun getTrackKey(
     provider: SearchProviderModel,
@@ -22,6 +24,14 @@ internal fun getTrackKey(
 
     if (provider.codeParam.isNotEmpty()) {
         code = uri.getQueryParameter(provider.codeParam)
+        Log.e(LOG_TAG,"codePrefix1: $code")
+        if (code.isNullOrEmpty() &&
+            provider.name == "baidu" &&
+            uri.toString().contains("from=1000969a")) {
+            code = "1000969a"
+        }
+        Log.e(LOG_TAG,"uri: ${uri.toString()}")
+        Log.e(LOG_TAG,"codePrefix2: $code")
 
         // Try cookies first because Bing has followOnCookies and valid code, but no
         // followOnParams => would tracks organic instead of sap-follow-on

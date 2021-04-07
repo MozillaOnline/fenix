@@ -4,6 +4,7 @@
 
 package org.mozilla.fenix.search.telemetry.ads
 
+import android.util.Log
 import androidx.annotation.VisibleForTesting
 import androidx.core.net.toUri
 import mozilla.components.browser.state.store.BrowserStore
@@ -65,6 +66,9 @@ class AdsTelemetry(private val metrics: MetricController) : BaseSearchTelemetry(
         val provider = getProviderForUrl(url) ?: return
         val paramSet = uri.queryParameterNames
 
+        Log.e(LOG_TAG,"adsprovider: ${provider.name}")
+        Log.e(LOG_TAG, "paramSet: $paramSet")
+
         if (!paramSet.contains(provider.queryParam) || !provider.containsAdLinks(urlPath)) {
             // Do nothing if the URL does not have the search provider's query parameter or
             // there were no ad clicks.
@@ -92,5 +96,7 @@ class AdsTelemetry(private val metrics: MetricController) : BaseSearchTelemetry(
 
         @VisibleForTesting
         internal const val ADS_MESSAGE_COOKIES_KEY = "cookies"
+
+        const val LOG_TAG = "BaiduTracking"
     }
 }
