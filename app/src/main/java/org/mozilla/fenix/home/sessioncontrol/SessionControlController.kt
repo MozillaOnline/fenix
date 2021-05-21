@@ -410,8 +410,18 @@ class DefaultSessionControlController(
             }
         event?.let { activity.metrics.track(it) }
 
+        var specialUrl = url
+        if (SupportUtils.isShoppingFes) {
+            if (url == SupportUtils.JD_URL) {
+                specialUrl = SupportUtils.JD_618_URL
+            }
+            /*if (url == SupportUtils.PDD_URL) {
+                specialUrl = SupportUtils.PDD_618_URL
+            }*/
+        }
+
         addTabUseCase.invoke(
-            url = appendSearchAttributionToUrlIfNeeded(url),
+            url = appendSearchAttributionToUrlIfNeeded(specialUrl),
             selectTab = true,
             startLoading = true
         )
